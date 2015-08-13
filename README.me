@@ -1,0 +1,48 @@
+Send file to client everytime the file changed on server.
+
+Example of code for client:
+
+	var data={firstValue:true}
+	var settingsPromise=$.ajax({
+		url:'settings.json',
+		success:function (a){
+			settings=a
+		}
+	});
+
+	var socket;
+
+	settingsPromise.then(registerSocket)
+
+	function registerSocket(){
+		socket=io(settings.socket)
+		socket.on('fileChange',function(x){
+			x=JSON.parse(x);
+			data=x.data;
+			updateData();
+		})
+		socket.emit('watch','data.json')
+	}
+
+	function updateData(){
+		$(document.body).html('The data is:' + JSON.stringify(data))
+	}
+
+	$(function(){
+		updateData();
+	})
+
+
+Example of code for client setting.json
+
+	{
+		"socket":"http://socket.ezlivesite.co.127.0.0.100.xip.io/"
+	}
+
+
+Example of server settings:json
+
+	{
+		"ip":"127.128.5.0",
+		"port":80
+	}
